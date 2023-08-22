@@ -382,10 +382,16 @@ public final class ImageCropPlugin implements FlutterPlugin , ActivityAware, Met
     @Override
     public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == PERMISSION_REQUEST_CODE && permissionRequestResult != null) {
-            int readExternalStorage = getPermissionGrantResult(READ_EXTERNAL_STORAGE, permissions, grantResults);
-            int writeExternalStorage = getPermissionGrantResult(WRITE_EXTERNAL_STORAGE, permissions, grantResults);
-            permissionRequestResult.success(readExternalStorage == PackageManager.PERMISSION_GRANTED &&
-                                                    writeExternalStorage == PackageManager.PERMISSION_GRANTED);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                int readExternalStorage = getPermissionGrantResult(READ_MEDIA_IMAGES, permissions, grantResults);
+                permissionRequestResult.success(readExternalStorage == PackageManager.PERMISSION_GRANTED);
+            }else {
+                int readExternalStorage = getPermissionGrantResult(READ_EXTERNAL_STORAGE, permissions, grantResults);
+                int writeExternalStorage = getPermissionGrantResult(WRITE_EXTERNAL_STORAGE, permissions, grantResults);
+                permissionRequestResult.success(readExternalStorage == PackageManager.PERMISSION_GRANTED &&
+                        writeExternalStorage == PackageManager.PERMISSION_GRANTED);
+            }
+
             permissionRequestResult = null;
         }
         return false;
