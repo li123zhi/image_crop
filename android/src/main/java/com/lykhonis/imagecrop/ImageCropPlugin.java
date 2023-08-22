@@ -38,6 +38,7 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 
+import static android.Manifest.permission.READ_MEDIA_IMAGES;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
@@ -357,7 +358,15 @@ public final class ImageCropPlugin implements FlutterPlugin , ActivityAware, Met
     }
 
     private void requestPermissions(Result result) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (activity.checkSelfPermission(READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED &&
+                    activity.checkSelfPermission(READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED) {
+                result.success(true);
+            } else {
+                permissionRequestResult = result;
+                activity.requestPermissions(new String[]{READ_MEDIA_IMAGES}, PERMISSION_REQUEST_CODE);
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (activity.checkSelfPermission(READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
                     activity.checkSelfPermission(WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 result.success(true);
